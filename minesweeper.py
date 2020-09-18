@@ -105,12 +105,19 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
+
+        if self.cells(len) == self.count:
+            return self.cells
+
         raise NotImplementedError
 
     def known_safes(self):
         """
         Returns the set of all cells in self.cells known to be safe.
         """
+        if self.count == 0:
+            return self.cells
+
         raise NotImplementedError
 
     def mark_mine(self, cell):
@@ -118,6 +125,10 @@ class Sentence():
         Updates internal knowledge representation given the fact that
         a cell is known to be a mine.
         """
+
+        self.cells.remove(cell)
+        count = count - 1
+
         raise NotImplementedError
 
     def mark_safe(self, cell):
@@ -125,6 +136,9 @@ class Sentence():
         Updates internal knowledge representation given the fact that
         a cell is known to be safe.
         """
+
+        self.cells.remove(cell)
+
         raise NotImplementedError
 
 
@@ -182,7 +196,29 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
+        #1
+        self.moves_made.add(cell)
+
+        #2
+        self.mark_safe(cell)
+        # update any centences that contain the cell
+
+        #3
+        # find all neighbors
+        neighbors = set([neighbors(cell)])
+
+        for mine in nearby_mines(cell):
+
+        newSentence = Sentence(neighbors, nearby_mines(cell))
+        self.knowledge.add(newSentence)
+
+
         raise NotImplementedError
+
+    def neighbors(cell):
+    for c in product(*(range(n-1, n+2) for n in cell)):
+        if c != cell and all(0 <= n < size for n in c) and c not in self.moves_made:
+            yield c
 
     def make_safe_move(self):
         """
@@ -202,4 +238,9 @@ class MinesweeperAI():
             1) have not already been chosen, and
             2) are not known to be mines
         """
+        random_move = tuple()
+        while random_move not in self.moves_made and random_move not in self.mines:
+            random_move = (random.randint(0, (Minesweeper.height - 1)), random.randint(0, (Minesweeper.with -1)))
+        return random_move
+
         raise NotImplementedError
