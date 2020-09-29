@@ -1,6 +1,7 @@
 import itertools
 from itertools import product
 import random
+import copy
 
 
 class Minesweeper():
@@ -118,6 +119,7 @@ class Sentence():
         """
         if self.count == 0:
             return self.cells
+        else return None
 
         raise NotImplementedError
 
@@ -129,7 +131,7 @@ class Sentence():
         if cell in self.cells:
             self.cells.remove(cell)
             self.count = self.count - 1
-        return
+        else return None
 
         raise NotImplementedError
 
@@ -140,7 +142,6 @@ class Sentence():
         """
         if cell in self.cells:
             self.cells.remove(cell)
-        return
 
         raise NotImplementedError
 
@@ -172,8 +173,8 @@ class MinesweeperAI():
         to mark that cell as a mine as well.
         """
         self.mines.add(cell)
-        for sentence in self.knowledge:
-            Sentence.mark_mine(cell)
+        for s in self.knowledge:
+            s.mark_mine(cell)
 
     def mark_safe(self, cell):
         """
@@ -181,8 +182,8 @@ class MinesweeperAI():
         to mark that cell as safe as well.
         """
         self.safes.add(cell)
-        for sentence in self.knowledge:
-            Sentence.mark_safe(cell)
+        for s in self.knowledge:
+            s.mark_safe(cell)
 
     def add_knowledge(self, cell, count):
         """
@@ -221,13 +222,14 @@ class MinesweeperAI():
             self.knowledge.append(newSentence)
 
         #4
-        for sentence in self.knowledge:
+        knowledge_copy = copy.deepcopy(self.knowledge)
+        for sentence in knowledge_copy:
             if len(sentence.cells) == 0:
                 continue
             if sentence.count == 0:
                 for cell in sentence.cells:
                     self.mark_safe(cell)
-            if sentence.count == len(sentence.cells):
+            elif sentence.count == len(sentence.cells):
                 for cell in sentence.cells:
                     if cell in self.mines:
                         self.mark_mine(cell)
